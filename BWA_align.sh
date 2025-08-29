@@ -33,7 +33,8 @@ ref="/project/logsdon_shared/projects/CenRNA/ONT-Seq/ref/T2T-CHM13v2.fasta"
 index="/project/logsdon_shared/projects/Savana/Short-Read/CHM13_PRO-Seq/CHM13_index/T2T-CHM13v2"
 #list input files (separated by spaces)
 #here these are the two replicates of PRO-seq data, starting with one first...still need to upload the other
-files='SRR15054301_1.fastq SRR15054301_2.fastq SRR15054302_1.fastq SRR15054302_2.fastq'
+files='SRR15054301_1.fastq SRR15054301_2.fastq'
+#for next set, this is just one rep: SRR15054302_1.fastq SRR15054302_2.fastq
 out="CHM13_RNA-Seq_bwa_aln.bam"
 
 ###########CREATED CONDA ENVIRONMENT FOR BWA
@@ -58,7 +59,7 @@ source activate bwa
 
 #glennis' example alignment included: bwa mem -t 24 -k 50 -c 1000000 options, I removed -k and allowed their default option (19) because 50 felt kind of long? (this is for seed sequence when searching) --> changed it to 35
 #For RNA seq data changed k back to 50 (from 35)... since reads are longer (150)
-bwa mem -t 24 -k 50 -c 1000000 "$index" $files | samtools view -bS -F 4 | samtools sort -m 8G -T tmp1 -o "$out"
+bwa mem -t 24 -k 50 -c 1000000 "$index" "$files" | samtools view -bS -F 4 | samtools sort -m 8G -T tmp1 -o "$out"
 samtools view -bS -q 1 "$out" > "${out%.*}_q1.bam"
 echo "Alignment of $files completed with $(samtools view -c $out) reads"
 #-F 2308 excludes alignments thate are unmapped, not primary alignments, or not secondary alingnments
